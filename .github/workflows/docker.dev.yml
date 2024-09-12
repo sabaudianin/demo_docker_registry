@@ -25,14 +25,8 @@ jobs:
 
       - name: Prepare Image tag name
         run: |
-          # Extracting the substring after
-          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-
-          # Converting to lower case and replace / with -
-          BRANCH_NAME_LOWER=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's|/|-|g')
-
-          # creating new enironment variable
-          echo "TAG_NAME=$BRANCH_NAME_LOWER" >> $GITHUB_ENV
+          echo "TAG_NAME=${GITHUB_REF#refs/heads/}" >>${GITHUB_ENV}
+          echo "TAG_NAME=${TG_NAME//\//-}" >>${GITHUB_ENV}
         env:
           GITHUB_REF: ${{ github.ref }}
 
@@ -42,4 +36,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ env.TAG_NAME }}
+          tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
