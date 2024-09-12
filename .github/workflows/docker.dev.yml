@@ -23,10 +23,23 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
 
+      - name: Prepare Image tag name
+        run: |
+          # Extracting the substring after
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+
+          # Converting to lower case and replace / with -
+          BRANCH_NAME_LOWER=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's|/|-|g')
+
+          # creating new enironment variable
+          echo "TAG_NAME=$BRANCH_NAME_LOWER" >> $GITHUB_ENV
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
       - name: Build Docker image
         uses: docker/build-push-action@v3
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+          tags: ghcr.io/${{ github.repository }}:${{ env.TAG_NAME }}
