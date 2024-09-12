@@ -23,13 +23,6 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Prepare Image tag name
-        run: |
-          echo "TAG_NAME=${GITHUB_REF#refs/heads/}" >>${GITHUB_ENV}
-          echo "TAG_NAME=${TG_NAME//\//-}" >>${GITHUB_ENV}
-        env:
-          GITHUB_REF: ${{ github.ref }}
-
       - name: Build Docker image
         uses: docker/build-push-action@v3
         with:
