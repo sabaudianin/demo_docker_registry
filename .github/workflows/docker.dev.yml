@@ -1,0 +1,32 @@
+name: Feature Branch - Docker Build
+
+on:
+  push:
+
+permissions:
+  packages: write
+
+jobs:
+  build_docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildix
+        uses: docker/setup-buildix-action@v3
+
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{secrets.GITHUB_ACTOR}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
